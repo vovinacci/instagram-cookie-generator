@@ -1,80 +1,75 @@
 """
 Logger setup module for instagram_cookie_updater.
 
-Configures structured logging:
 - INFO and below -> stdout
 - WARNING and above -> stderr
-- Unified format (plain or JSON)
-- Dynamic log level via LOG_LEVEL env variable.
-- Dynamic format via LOG_FORMAT env variable.
+- Unified format (plain or JSON).
 """
 
 import json
 import logging
 import os
 import sys
-
-
-def get_logger(name: str | None = None) -> logging.Logger:
-    """
-    Helper to get a logger.
-
-    - If name is None: uses caller's module name.
-    - If name provided: uses that explicitly.
-
-    Args:
-        name (str | None): Logger name.
-    Returns:
-        logging.Logger: Configured logger instance.
-    """
-    if name is None:
-        name = sys._getframe(1).f_globals.get("__name__", "__main__")
-    return logging.getLogger(name)
+from datetime import datetime
 
 
 def _stdout_filter(record: logging.LogRecord) -> bool:
-    """Filter: allow only records below WARNING for stdout."""
+    """Filter to allow only records below WARNING for stdout."""
     return record.levelno < logging.WARNING
 
 
 class JsonFormatter(logging.Formatter):
-    """Custom JSON formatter for structured logs."""
+    """
+    JSON formatter for structured logs.
+
+    Example output:
+    {"timestamp": "2025-04-28T21:42:00Z", "level": "INFO", "message": "...", "module": "cookie_manager", "line": 42}
+    """
 
     def format(self, record: logging.LogRecord) -> str:
-        log_record = {
-            "timestamp": self.formatTime(record, self.datefmt),
+        record_dict = {
+            "timestamp": datetime.utcfromtimestamp(record.created).isoformat(timespec="seconds") + "Z",
             "level": record.levelname,
-            "logger": record.name,
-            "filename": record.filename,
-            "lineno": record.lineno,
+            "module": record.module,
+            "line": record.lineno,
             "message": record.getMessage(),
         }
-        return json.dumps(log_record)
+        return json.dumps(record_dict)
+
+
+class PlainFormatter(logging.Formatter):
+    """
+    Plain text formatter using ISO8601 timestamps, like JSON but readable.
+
+    Example output:
+    2025-04-28T21:42:00Z [INFO] cookie_manager:42 Starting refresh worker...
+    """
+
+    def formatTime(self, record: logging.LogRecord, datefmt: str | None = None) -> str:
+        return datetime.utcfromtimestamp(record.created).isoformat(timespec="seconds") + "Z"
+
+    def format(self, record: logging.LogRecord) -> str:
+        record.asctime = self.formatTime(record)
+        return f"{record.asctime} [{record.levelname}] {record.module}:{record.lineno} {record.getMessage()}"
 
 
 def setup_logger() -> None:
     """
-    Configure root logger. Safe to call multiple times (idempotent).
+    Configure the root logger safely (idempotent).
     """
-    root_logger = logging.getLogger()
+    log_format = os.getenv("LOG_FORMAT", "plain").lower()  # "plain" or "json"
+    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
-    # Determine log level
-    log_level_str = os.getenv("LOG_LEVEL", "INFO").upper()
-    log_level = getattr(logging, log_level_str, logging.INFO)
-    root_logger.setLevel(log_level)
-
-    # Determine log format
-    log_format = os.getenv("LOG_FORMAT", "plain").lower()
+    formatter: logging.Formatter
 
     if log_format == "json":
-        formatter: logging.Formatter = JsonFormatter(datefmt="%Y-%m-%d %H:%M:%S")
+        formatter = JsonFormatter()
     else:
-        formatter = logging.Formatter(
-            fmt="%(asctime)s %(levelname)s %(filename)s:%(lineno)d %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
+        formatter = PlainFormatter()
 
-    # Clear existing handlers
+    root_logger = logging.getLogger()
+    root_logger.setLevel(getattr(logging, log_level, logging.INFO))
+
     if root_logger.hasHandlers():
         root_logger.handlers.clear()
 
@@ -89,3 +84,12 @@ def setup_logger() -> None:
 
     root_logger.addHandler(stdout_handler)
     root_logger.addHandler(stderr_handler)
+
+
+def get_logger(name: str | None = None) -> logging.Logger:
+    """
+    Helper to get a logger.
+    """
+    if name is None:
+        name = sys._getframe(1).f_globals.get("__name__", "__main__")
+    return logging.getLogger(name)
