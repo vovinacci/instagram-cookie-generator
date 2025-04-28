@@ -58,6 +58,11 @@ Features:
   INSTAGRAM_PASSWORD=your_instagram_password
   REFRESH_INTERVAL_SECONDS=3600
   COOKIES_FILE=instagram_cookies.txt
+
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  LOG_LEVEL=DEBUG
+  # Log format: "plain" (default) or "json"
+  LOG_FORMAT=plain
   ```
 
 - Build and run the Docker container:
