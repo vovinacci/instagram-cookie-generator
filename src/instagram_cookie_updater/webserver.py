@@ -2,17 +2,16 @@
 Flask server to expose a healthcheck endpoint for Instagram cookies.
 """
 
-import logging
 import os
 from typing import Tuple
 
 from flask import Flask, Response, jsonify
 
 from .cookie_manager import COOKIES_FILE
-from .logger import setup_logger
+from .logger import get_logger, setup_logger
 
 setup_logger()
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 app = Flask(__name__)
 

@@ -5,7 +5,6 @@ Handles browser automation to log into Instagram, manage cookies, and save them 
 """
 
 import datetime
-import logging
 import os
 import time
 from typing import cast
@@ -18,10 +17,10 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.firefox import GeckoDriverManager
 
-from .logger import setup_logger
+from .logger import get_logger, setup_logger
 
 setup_logger()
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 # Load environment variables
 INSTAGRAM_USERNAME = cast(str, os.getenv("INSTAGRAM_USERNAME"))

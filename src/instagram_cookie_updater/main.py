@@ -5,7 +5,6 @@ Spawns a background thread to refresh Instagram cookies periodically,
 and launches a Flask webserver for health monitoring.
 """
 
-import logging
 import os
 import threading
 import time
@@ -13,13 +12,14 @@ import time
 from dotenv import load_dotenv
 
 from .cookie_manager import cookie_manager
-from .logger import setup_logger
+from .logger import get_logger, setup_logger
 from .webserver import start_server
 
-setup_logger()
-logger = logging.getLogger(__name__)
-
 load_dotenv()
+
+setup_logger()
+logger = get_logger()
+
 
 REFRESH_INTERVAL = int(os.getenv("REFRESH_INTERVAL_SECONDS", "3600"))
 
