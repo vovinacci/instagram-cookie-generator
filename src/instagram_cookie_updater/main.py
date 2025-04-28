@@ -12,9 +12,14 @@ import time
 from dotenv import load_dotenv
 
 from .cookie_manager import cookie_manager
+from .logger import get_logger, setup_logger
 from .webserver import start_server
 
 load_dotenv()
+
+setup_logger()
+logger = get_logger()
+
 
 REFRESH_INTERVAL = int(os.getenv("REFRESH_INTERVAL_SECONDS", "3600"))
 
@@ -24,14 +29,14 @@ def refresh_worker() -> None:
     Background thread that refreshes cookies at a fixed interval.
     """
     while True:
-        print("[*] Refreshing Instagram cookies...")
+        logger.info("Refreshing Instagram cookies...")
         try:
             cookie_manager()
-            print("[+] Cookies refreshed successfully.")
+            logger.info("Cookies refreshed successfully.")
         except Exception as e:  # pylint: disable=broad-exception-caught
             # Intentionally catching all exceptions to prevent the refresh worker from crashing the entire service.
-            print(f"[-] Error refreshing cookies: {e}")
-        print(f"[*] Sleeping for {REFRESH_INTERVAL} seconds...")
+            logger.error(f"{type(e)}: Error refreshing cookies: {e}")
+        logger.info(f"Sleeping for {REFRESH_INTERVAL} seconds...")
         time.sleep(REFRESH_INTERVAL)
 
 

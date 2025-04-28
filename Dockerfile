@@ -14,7 +14,6 @@ RUN pip wheel --no-deps --wheel-dir /wheels .
 ### --- Stage 2: Runtime ---
 FROM python:3.13.3-slim-bullseye
 
-ENV GECKODRIVER_VERSION=v0.36.0
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
@@ -32,13 +31,6 @@ RUN apt-get update && \
       libasound2 \
       fonts-liberation && \
     rm -rf /var/lib/apt/lists/*
-
-# Install geckodriver
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSL "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz" \
-    | tar -xz -C /usr/local/bin \
-    && chmod +x /usr/local/bin/geckodriver \
-    && geckodriver --version
 
 # Install the built wheel
 COPY --from=builder /wheels /wheels

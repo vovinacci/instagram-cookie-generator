@@ -17,6 +17,10 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.firefox import GeckoDriverManager
 
+from .logger import get_logger
+
+logger = get_logger()
+
 # Load environment variables
 INSTAGRAM_USERNAME = cast(str, os.getenv("INSTAGRAM_USERNAME"))
 INSTAGRAM_PASSWORD = cast(str, os.getenv("INSTAGRAM_PASSWORD"))
@@ -65,7 +69,7 @@ def load_cookies(driver: WebDriver, filename: str) -> None:
         filename (str): Path to the cookies file.
     """
     if os.path.exists(filename):
-        print("[*] Loading existing cookies...")
+        logger.info(f"Loading existing cookies from {filename}")
         with open(filename, "r", encoding="utf-8") as f:
             lines = f.readlines()
         for line in lines:
@@ -83,7 +87,7 @@ def load_cookies(driver: WebDriver, filename: str) -> None:
                     driver.add_cookie(cookie)
                 except Exception as e:  # pylint: disable=broad-exception-caught
                     # Some cookies may be invalid or incompatible; skip failed cookie loading.
-                    print(f"[-] Failed to add cookie {name}: {e}")
+                    logger.warning(f"{type(e)}: Failed to add cookie {name}: {e}")
 
 
 def save_cookies(driver: WebDriver, filename: str) -> None:
@@ -94,7 +98,7 @@ def save_cookies(driver: WebDriver, filename: str) -> None:
         driver (WebDriver): The Selenium WebDriver instance.
         filename (str): Path to the cookies file.
     """
-    print("[*] Saving cookies to file...")
+    logger.info("Saving cookies to file {filename}")
     cookies = driver.get_cookies()
     now = datetime.datetime.now()
 
@@ -130,14 +134,14 @@ def save_cookies(driver: WebDriver, filename: str) -> None:
                 remaining = f"{minutes}m"
 
             if delta.total_seconds() <= 24 * 3600:
-                warning = "❗ Expiring soon!"
+                warning = " ❗ Expiring soon!"
             elif delta.total_seconds() <= 7 * 24 * 3600:
-                warning = "⚠️  Less than 7 days"
+                warning = " ⚠️  Less than 7 days"
             else:
                 warning = ""
 
-            print(
-                f"[Cookie] {name} | Expires: {readable_expiry.strftime('%Y-%m-%d %H:%M:%S')} | Time left: {remaining} {warning}"
+            logger.info(
+                f"Cookie {name} expires at {readable_expiry.strftime('%Y-%m-%d %H:%M:%S')} (Time left: {remaining}){warning}"
             )
 
 
@@ -191,13 +195,13 @@ def login_instagram(driver: WebDriver) -> bool:
 
     except Exception as e:  # pylint: disable=broad-exception-caught
         # Catch unexpected errors during login, like missing fields or layout changes.
-        print(f"[-] Login failed: {e}")
+        logger.error(f"{type(e)}: Login failed: {e}")
         return False
 
     if already_logged_in(driver):
-        print("[+] Successfully logged into Instagram!")
+        logger.info("Successfully logged into Instagram.")
         return True
-    print("[-] Login unsuccessful. Check credentials or CAPTCHA!")
+    logger.warning("Login unsuccessful. Check credentials or CAPTCHA!")
     return False
 
 
@@ -207,7 +211,7 @@ def cookie_manager() -> None:
 
     Handles loading existing cookies, login if needed, and saving new cookies.
     """
-    print("[*] Starting headless Firefox...")
+    logger.info("Starting headless Firefox...")
     driver = setup_browser()
 
     driver.get(INSTAGRAM_HOME_URL)
@@ -219,11 +223,12 @@ def cookie_manager() -> None:
         time.sleep(5)
 
         if already_logged_in(driver):
-            print("[+] Logged in using existing cookies!")
+            logger.info("Logged in using existing cookies.")
             save_cookies(driver, COOKIES_FILE)
             driver.quit()
             return
-        print("[*] Existing cookies invalid, logging in manually...")
+
+        logger.info("Existing cookies invalid, logging in manually...")
 
     if login_instagram(driver):
         save_cookies(driver, COOKIES_FILE)
