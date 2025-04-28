@@ -16,9 +16,8 @@ Features:
 
 ## Local setup
 
-- Dependencies:
+- Dependency:
   - [Python](https://www.python.org/) == 3.13
-  - [Virtualenv](https://virtualenv.pypa.io/en/latest/)
 
 - Create Python virtualenv (required during first run only)
 
@@ -50,7 +49,7 @@ Features:
   pylint --version
   ```
 
-### Running in Docker
+### Running in Docker Compose
 
 - Create a `.env` file with the following keys:
 

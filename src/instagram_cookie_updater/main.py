@@ -5,6 +5,7 @@ Spawns a background thread to refresh Instagram cookies periodically,
 and launches a Flask webserver for health monitoring.
 """
 
+import logging
 import os
 import threading
 import time
@@ -12,7 +13,11 @@ import time
 from dotenv import load_dotenv
 
 from .cookie_manager import cookie_manager
+from .logger import setup_logger
 from .webserver import start_server
+
+setup_logger()
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -24,14 +29,14 @@ def refresh_worker() -> None:
     Background thread that refreshes cookies at a fixed interval.
     """
     while True:
-        print("[*] Refreshing Instagram cookies...")
+        logger.info("Refreshing Instagram cookies...")
         try:
             cookie_manager()
-            print("[+] Cookies refreshed successfully.")
+            logger.info("Cookies refreshed successfully.")
         except Exception as e:  # pylint: disable=broad-exception-caught
             # Intentionally catching all exceptions to prevent the refresh worker from crashing the entire service.
-            print(f"[-] Error refreshing cookies: {e}")
-        print(f"[*] Sleeping for {REFRESH_INTERVAL} seconds...")
+            logger.error(f"{type(e)}: Error refreshing cookies: {e}")
+        logger.info(f"Sleeping for {REFRESH_INTERVAL} seconds...")
         time.sleep(REFRESH_INTERVAL)
 
 
