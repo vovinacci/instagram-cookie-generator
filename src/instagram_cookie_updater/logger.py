@@ -4,6 +4,7 @@ Logger setup module for instagram_cookie_updater.
 - INFO and below -> stdout
 - WARNING and above -> stderr
 - Unified format (plain or JSON).
+- Single setup entrypoint: call setup_logger() only once from main.py.
 """
 
 import json
@@ -23,7 +24,7 @@ class JsonFormatter(logging.Formatter):
     JSON formatter for structured logs.
 
     Example output:
-    {"timestamp": "2025-04-28T21:42:00Z", "level": "INFO", "message": "...", "module": "cookie_manager", "line": 42}
+    {"timestamp": "2025-04-28T21:42:00Z", "level": "INFO", "module": "cookie_manager", "line": 42, "message": "..."}
     """
 
     def format(self, record: logging.LogRecord) -> str:
@@ -55,7 +56,10 @@ class PlainFormatter(logging.Formatter):
 
 def setup_logger() -> None:
     """
-    Configure the root logger safely (idempotent).
+    Configure the root logger.
+
+    Must be called once at app startup (e.g., in main.py).
+    Safe to call multiple times but unnecessary.
     """
     log_format = os.getenv("LOG_FORMAT", "plain").lower()  # "plain" or "json"
     log_level = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -88,7 +92,17 @@ def setup_logger() -> None:
 
 def get_logger(name: str | None = None) -> logging.Logger:
     """
-    Helper to get a logger.
+    Helper to get a logger for a module.
+
+    Args:
+        name: Module name. If None, automatically infer the caller's module name
+              using sys._getframe(1).f_globals["__name__"].
+
+    Returns:
+        Configured logger instance.
+
+    Example:
+        logger = get_logger()
     """
     if name is None:
         name = sys._getframe(1).f_globals.get("__name__", "__main__")

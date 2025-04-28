@@ -8,9 +8,8 @@ from typing import Tuple
 from flask import Flask, Response, jsonify
 
 from .cookie_manager import COOKIES_FILE
-from .logger import get_logger, setup_logger
+from .logger import get_logger
 
-setup_logger()
 logger = get_logger()
 
 app = Flask(__name__)

@@ -5,21 +5,21 @@ Designed for Dockerized, production-like deployments with Python.
 
 Works well together with [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux).
 
-Features:
+## Features
 
 - Python 3.13 support
 - Periodic auto-refresh of cookies
 - Exports cookies compatible with cURL and other tools
 - Uses headless Firefox browser
-- Full Docker amd Docker Compose support
+- Full Docker and Docker Compose support
 - Health monitoring via `/status` endpoint
 
-## Local setup
+## Local Setup
 
-- Dependency:
-  - [Python](https://www.python.org/) == 3.13
+- **Dependency**:  
+  [Python 3.13](https://www.python.org/)
 
-- Create Python virtualenv (required during first run only)
+- **Create Python virtualenv** (required during first run):
 
   ```shell
   mkdir -p "${HOME}/.local/virtualenv" && \
@@ -28,19 +28,19 @@ Features:
     pip install --upgrade pip
   ```
 
-- Activate Python virtualenv
+- **Activate virtualenv**:
 
   ```shell
   source "${HOME}/.local/virtualenv/instagram-cookie-generator/bin/activate"
   ```
 
-- Install packages
+- **Install dependencies**:
 
   ```shell
   pip install '.[dev]'
   ```
 
-- Check Python tool versions
+- **Verify installed tools**:
 
   ```shell
   black --version && \
@@ -49,35 +49,40 @@ Features:
   pylint --version
   ```
 
-### Running in Docker Compose
+## Running in Docker Compose
 
-- Create a `.env` file with the following keys:
+- **Prepare environment variables**:
+
+  Copy `.env.example` to `.env` and edit your credentials:
 
   ```shell
-  INSTAGRAM_USERNAME=your_instagram_username
-  INSTAGRAM_PASSWORD=your_instagram_password
-  REFRESH_INTERVAL_SECONDS=3600
-  COOKIES_FILE=instagram_cookies.txt
-
-  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  LOG_LEVEL=DEBUG
-  # Log format: "plain" (default) or "json"
-  LOG_FORMAT=plain
+  cp .env.example .env
   ```
 
-- Build and run the Docker container:
+- **Build and run the container**:
 
   ```shell
   docker compose up --build
   ```
 
-## Make targets
+## Make Targets
 
-Make targets are self-documented, issue `make` or `make help` to show all available make targets with brief descriptions.
+Make targets are self-documented.
+
+List all available targets:
+
+```shell
+make help
+```
+
+Typical examples:
+
+- `make code-checks` — Run full code quality checks
+- `make hooks-install` — Install pre-commit hooks
 
 ## Pre-Commit Hooks
 
-This repo uses pre-commit to ensure code quality **before each commit**.
+This repository uses [pre-commit](https://pre-commit.com/) to enforce code quality **before each commit**.
 
 To install hooks:
 
@@ -85,17 +90,17 @@ To install hooks:
 make hooks-install
 ```
 
-For the list of checks, please see [pre-commit configuration](.pre-commit-config.yaml)
+See configured checks inside [.pre-commit-config.yaml](./.pre-commit-config.yaml).
 
 ## Flask Health Endpoint
 
-Once running, the Flask server exposes a simple healthcheck:
+After startup, the Flask server exposes a simple healthcheck:
 
 | Endpoint      | Purpose                                                        |
 |:--------------|:---------------------------------------------------------------|
 | `GET /status` | Returns 200 if cookies file exists and is fresh, otherwise 503 |
 
-Example:
+Example usage:
 
 ```shell
 curl http://127.0.0.1:5000/status
@@ -103,15 +108,16 @@ curl http://127.0.0.1:5000/status
 
 ## Code Style
 
-| Tool   | Purpose               |
-|:-------|:----------------------|
-| black  | Code formatting       |
-| isort  | Import sorting        |
-| mypy   | Static type checking  |
-| pylint | Static linting        |
+| Tool     | Purpose               |
+|:---------|:----------------------|
+| `black`  | Code formatting       |
+| `isort`  | Import sorting        |
+| `mypy`   | Static type checking  |
+| `pylint` | Static linting        |
 
 All tools are integrated via Makefile and pre-commit hooks.
 
 ## Notes
 
-- Dockerfile uses unpinned apt packages for simplicity; pinning can be added for strict reproducibility.
+- Dockerfile uses unpinned apt packages for simplicity; pinning can be added for strict reproducibility if needed.
+- Logger supports both **plain** and **JSON** formats (configurable via `.env`).

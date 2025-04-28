@@ -17,9 +17,8 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.firefox import GeckoDriverManager
 
-from .logger import get_logger, setup_logger
+from .logger import get_logger
 
-setup_logger()
 logger = get_logger()
 
 # Load environment variables
