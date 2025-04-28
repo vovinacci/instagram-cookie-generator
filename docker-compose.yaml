@@ -1,0 +1,24 @@
+services:
+  instagram-cookies-updater:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: instagram-cookies-updater:latest
+    container_name: instagram-cookies-updater
+    env_file:
+      - ../load-bot-linux/.env
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - ../load-bot-linux/instagram_cookies.txt:/app/instagram_cookies.txt
+      - ./.env:/app/.env:ro
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-f"
+        - "http://localhost:5000/status"
+      interval: 2m
+      timeout: 10s
+      retries: 3

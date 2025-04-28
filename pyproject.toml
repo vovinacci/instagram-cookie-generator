@@ -1,0 +1,65 @@
+[build-system]
+requires = [
+  "setuptools>=61.0"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instagram-cookie-updater"
+version = "0.1.0"
+description = "Automatically refresh Instagram cookies and expose health endpoint."
+authors = [
+    { name="Volodymyr Shcherbinin (vovin)", email="vovin@lurk.kyiv.ua" }
+]
+dependencies = [
+    "Flask==3.1.0",
+    "python-dotenv==1.1.0",
+    "requests==2.32.3",
+    "selenium==4.31.0",
+    "webdriver-manager==4.0.2"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==25.1.0",
+    "isort==6.0.1",
+    "mypy==1.15.0",
+    "pylint==3.3.6",
+    "types-colorama==0.4.15.20240311",
+    "types-requests==2.32.0.20250328"
+]
+
+[tool.black]
+line-length = 120
+target-version = ['py313']
+extend-exclude = '/(build|venv)/'
+
+[tool.isort]
+profile = "black"
+atomic = true
+color_output = true
+only_modified = true
+line_length = 120
+skip = [
+    "build/",
+    "venv"
+]
+# `source = "runtime"` is optional if you want to specify the root to isort;
+# you can remove or rename as needed.
+source = "runtime"
+
+[tool.pylint.main]
+fail-under = 9.5
+jobs = 0
+persistent = false
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = false
+strict = true
+exclude = [
+    "build/",
+    "venv/"
+]
