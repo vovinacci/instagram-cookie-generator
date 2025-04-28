@@ -3,7 +3,7 @@
 Automatically refresh Instagram cookies using Selenium, save them in Netscape HTTP Cookie File format, and expose a healthcheck endpoint via Flask.
 Designed for Dockerized, production-like deployments with Python.
 
-Works well together with [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux)
+Works well together with [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux).
 
 Features:
 
@@ -38,7 +38,7 @@ Features:
 - Install packages
 
   ```shell
-  pip install '.[dev,suite]'
+  pip install '.[dev]'
   ```
 
 - Check Python tool versions
@@ -52,14 +52,7 @@ Features:
 
 ### Running in Docker
 
-- Build and run the Docker container:
-
-  ```shell
-  docker compose up --build
-  ```
-
-- Environment Variables
-  Create a `.env` file with the following keys:
+- Create a `.env` file with the following keys:
 
   ```shell
   INSTAGRAM_USERNAME=your_instagram_username
@@ -68,7 +61,11 @@ Features:
   COOKIES_FILE=instagram_cookies.txt
   ```
 
-  Make sure to **mount your `.env`** when running Docker, if needed.
+- Build and run the Docker container:
+
+  ```shell
+  docker compose up --build
+  ```
 
 ## Make targets
 
