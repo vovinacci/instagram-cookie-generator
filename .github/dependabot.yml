@@ -1,0 +1,26 @@
+version: 2
+updates:
+  # Docker
+  - package-ecosystem: "docker"
+    directory: "/"
+    ignore:
+      - dependency-name: "python"  # We want only patch updates
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+    commit-message:
+      prefix: "feat(deps): "
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    commit-message:
+      prefix: "chore(deps): "
+  # Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "feat(deps): "
