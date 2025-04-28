@@ -3,6 +3,9 @@ updates:
   # Docker
   - package-ecosystem: "docker"
     directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
     ignore:
       - dependency-name: "python"  # We want only patch updates
         update-types:
@@ -13,11 +16,17 @@ updates:
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
     commit-message:
       prefix: "chore(deps): "
   # Python
   - package-ecosystem: "pip"
     directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
     groups:
       dependencies:
         patterns:
