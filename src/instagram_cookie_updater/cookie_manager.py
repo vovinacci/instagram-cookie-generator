@@ -33,6 +33,7 @@ INSTAGRAM_LOGIN_URL = "https://www.instagram.com/accounts/login/"
 INSTAGRAM_HOME_URL = "https://www.instagram.com/"
 
 
+@retry(max_attempts=3, delay_seconds=3)
 def setup_browser(headless: bool = True, lightweight: bool = True) -> WebDriver:
     """
     Set up a headless Firefox browser instance.
@@ -153,6 +154,7 @@ def save_cookies(driver: WebDriver, filename: str) -> None:
         logger.exception(f"{type(e)}: Failed to save cookies to file")
 
 
+@retry(max_attempts=2, delay_seconds=2)
 def already_logged_in(driver: WebDriver) -> bool:
     """
     Check if already logged into Instagram based on current page.
@@ -172,6 +174,7 @@ def already_logged_in(driver: WebDriver) -> bool:
         return False
 
 
+@retry(max_attempts=3, delay_seconds=5)
 def login_instagram(driver: WebDriver) -> bool:
     """
     Perform Instagram login using provided credentials.
