@@ -62,10 +62,10 @@ like [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux)
   cp .env.example .env
   ```
 
-- **Build and run the container**:
+- **Run the container**:
 
   ```shell
-  docker compose up --build
+  docker compose up
   ```
 
 ## Make Targets
