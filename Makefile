@@ -28,16 +28,33 @@ code-fmt-check:  ## Check code formatting
 	black --check .
 
 .PHONY: container-build-push
-container-build-push:
-	#docker build --build-arg VERSION=$(VERSION) -t ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION) -t ghcr.io/$(OWNER)/instagram-cookie-generator:latest .
-	docker build -t ghcr.io/$(OWNER)/instagram-cookie-generator:latest .
+container-build-push:  ## Build container image and push it to the registry (GHCR)
+	$(PRINT_TARGET)
+ifeq ($(OWNER),)
+	$(error OWNER variable is not set. Please provide it via the environment or as a Makefile variable.)
+endif
+ifeq ($(VERSION),)
+	$(error VERSION variable is not set. Please provide it via the environment or as a Makefile variable.)
+endif
+ifeq ($(GHCR_PAT),)
+	$(error GHCR_PAT variable is not set. Please provide it via the environment or as a Makefile variable.)
+endif
+	docker buildx build \
+		--build-arg BUILD_DATETIME=$(shell date -u +%FT%T%z) \
+		--build-arg CONTAINER_IMAGE_VERSION=${VERSION} \
+		--build-arg VCS_REF=$(shell git log --pretty=format:'%h' -n 1) \
+		--load \
+		--platform linux/amd64 \
+		--tag=ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION) \
+		--tag ghcr.io/$(OWNER)/instagram-cookie-generator:latest . \
+		.
+
 	echo "$(GHCR_PAT)" | docker login ghcr.io -u $(OWNER) --password-stdin
-	#docker push ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION)
+	docker push ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION)
 	docker push ghcr.io/$(OWNER)/instagram-cookie-generator:latest
 
-
 .PHONY: container-test
-container-test:  ## Run tests in container
+container-test:  ## Run tests in container image
 	$(PRINT_TARGET)
 	docker compose -f docker-compose.test.yaml up --build --abort-on-container-exit
 

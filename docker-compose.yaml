@@ -1,10 +1,7 @@
 services:
   instagram-cookies-updater:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: instagram-cookies-updater:latest
-    container_name: instagram-cookies-updater
+    image: ghcr.io/vovinacci/instagram-cookie-generator:latest
+    container_name: instagram-cookies-generator
     env_file:
       - ./.env
     restart: unless-stopped

@@ -15,20 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Temporary commented out
-      # - name: Release Please Action
-      #   id: release
-      #   uses: googleapis/release-please-action@v4
-      #   with:
-      #     release-type: python
-      #     package-name: instagram-cookie-generator
+      - name: Release Please Action
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: python
+          package-name: instagram-cookie-generator
 
       - name: Checkout source code
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@v4
 
       - name: Set up Docker BuildKit
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
@@ -39,13 +38,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Extract version from created tag
-      #   if: ${{ steps.release.outputs.release_created }}
-      #   run: |
-      #     echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
+      - name: Extract version from created tag
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
 
       - name: Build and Push Docker Image via Makefile
-        # if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs.release_created }}
         run: |
           make container-build-push \
             VERSION=${{ env.VERSION }} OWNER=${{ github.repository_owner }} GHCR_PAT=${{ secrets.GITHUB_TOKEN }}

@@ -16,6 +16,19 @@ FROM python:3.13.3-slim-bullseye
 
 ENV PYTHONUNBUFFERED=1
 
+ARG VERSION
+ARG BUILD_DATETIME
+ARG VCS_REF
+
+# Labels as per https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.authors="vovin@lurk.kyiv.ua" \
+      org.opencontainers.image.created="${BUILD_DATETIME}" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.source="https://github.com/vovinacci/instagram-cookie-generator" \
+      org.opencontainers.image.title="instagram-cookie-generator" \
+      org.opencontainers.image.vendor="Volodymyr Shcherbinin (vovin)" \
+      org.opencontainers.image.version="${CONTAINER_IMAGE_VERSION}"
+
 WORKDIR /app
 
 # Install runtime dependencies
