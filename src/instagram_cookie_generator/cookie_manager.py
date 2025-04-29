@@ -94,9 +94,9 @@ def load_cookies(driver: WebDriver, filename: str) -> None:
                         logger.warning(f"Invalid cookie format for {name}: {e}")
                     except Exception as e:  # pylint: disable=broad-exception-caught
                         # For unexpected exceptions, log full stack trace
-                        logger.exception(f"{type(e)}: Unexpected error while adding cookie: {name}")
+                        logger.exception(f"{type(e)}: Unexpected error while adding cookie: {name}: {e}")
         except OSError as e:
-            logger.exception(f"{type(e)}: Failed to read cookies file {filename}")
+            logger.exception(f"{type(e)}: Failed to read cookies file {filename}: {e}")
 
 
 def save_cookies(driver: WebDriver, filename: str) -> None:
