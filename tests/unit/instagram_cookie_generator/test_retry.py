@@ -81,7 +81,7 @@ def test_retry_with_exponential_backoff(monkeypatch: pytest.MonkeyPatch) -> None
 
     call_count = {"count": 0}
 
-    @retry(max_attempts=4, delay_seconds=1, backoff=True)
+    @retry(max_attempts=4, delay_seconds=1, backoff=True, jitter=0)
     def flaky() -> str:
         if call_count["count"] < 3:
             call_count["count"] += 1

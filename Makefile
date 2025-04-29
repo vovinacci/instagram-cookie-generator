@@ -25,6 +25,11 @@ code-fmt-check:  ## Check code formatting
 	isort --check-only .
 	black --check .
 
+.PHONY: container-test
+container-test:  ## Run tests in container
+	$(PRINT_TARGET)
+	docker compose -f docker-compose.test.yaml up --build --abort-on-container-exit
+
 .PHONY: help
 help:  ## Display this help.
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

@@ -1,0 +1,14 @@
+services:
+  instagram-cookie-updater-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=DEBUG
+      - LOG_FORMAT=plain
+    command: |
+      bash -c "pip install .[dev] && pytest --cov=src --cov-report=term-missing tests/unit"
