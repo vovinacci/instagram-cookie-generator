@@ -5,7 +5,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "instagram-cookie-updater"
+name = "instagram-cookie-generator"
 version = "0.1.0"
 description = "Automatically refresh Instagram cookies and expose health endpoint."
 authors = [
@@ -65,11 +65,11 @@ persistent = false
 
 [tool.mypy]
 python_version = "3.13"
+mypy_path = "src"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = false
 strict = true
-mypy_path = "src"
 exclude = [
     "build/",
     "venv/"
