@@ -11,4 +11,4 @@ services:
       - LOG_LEVEL=DEBUG
       - LOG_FORMAT=plain
     command: |
-      bash -c "pip install .[dev] && pytest --cov=src --cov-report=term-missing tests/unit"
+      bash -c "pip install .[dev] && pip install --upgrade pip && PYTHONPATH=src pytest"

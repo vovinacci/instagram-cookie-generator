@@ -1,12 +1,12 @@
 """
-Unit tests for the retry decorator in src.instagram_cookie_updater.retry.
+Unit tests for the retry decorator in src.instagram_cookie_generator.retry.
 """
 
 import time
 
 import pytest
 
-from instagram_cookie_updater.retry import retry
+from instagram_cookie_generator.retry import retry
 
 
 def test_retry_success_first_try() -> None:
