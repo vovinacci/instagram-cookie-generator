@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.1.0...v0.1.1) (2025-04-29)
+
+
+### Bug Fixes
+
+* Use correct version, strip extra docker build argument ([42362b4](https://github.com/vovinacci/instagram-cookie-generator/commit/42362b4b4f132c368d583de7e81ed82c302af132))
+
 ## 0.1.0 (2025-04-29)
 
 
