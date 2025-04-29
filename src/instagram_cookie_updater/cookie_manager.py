@@ -7,7 +7,7 @@ Handles browser automation to log into Instagram, manage cookies, and save them 
 import datetime
 import os
 import time
-from typing import Callable, TypeVar, cast
+from typing import cast
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException, WebDriverException
@@ -19,6 +19,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from webdriver_manager.firefox import GeckoDriverManager
 
 from .logger import get_logger
+from .retry import retry
 
 logger = get_logger()
 
@@ -30,44 +31,6 @@ COOKIES_FILE = os.getenv("COOKIES_FILE", "instagram_cookies.txt")
 
 INSTAGRAM_LOGIN_URL = "https://www.instagram.com/accounts/login/"
 INSTAGRAM_HOME_URL = "https://www.instagram.com/"
-
-if INSTAGRAM_USERNAME is None or INSTAGRAM_PASSWORD is None:
-    raise ValueError("INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD must be set in environment variables")
-
-_T = TypeVar("_T")
-
-
-def with_retries(func: Callable[[], _T], max_attempts: int = 3, delay_seconds: int = 5) -> _T:
-    """
-    Retry a function up to max_attempts times on failure.
-
-    Args:
-        func: A callable with no arguments that returns a value.
-        max_attempts: Maximum number of attempts.
-        delay_seconds: Delay between attempts in seconds.
-
-    Returns:
-        The successful result from func().
-
-    Raises:
-        Exception: The last raised exception if all attempts fail.
-    """
-    last_exception: Exception | None = None
-
-    for attempt in range(1, max_attempts + 1):
-        try:
-            return func()
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.warning(f"Attempt {attempt}/{max_attempts} failed with error: {e}")
-            last_exception = e
-            if attempt < max_attempts:
-                time.sleep(delay_seconds)
-
-    # After all attempts failed
-    logger.error(f"All {max_attempts} attempts failed.")
-    if last_exception is not None:
-        raise last_exception
-    raise RuntimeError("Unexpected error in with_retries logic.")
 
 
 def setup_browser(headless: bool = True, lightweight: bool = True) -> WebDriver:
@@ -253,10 +216,14 @@ def cookie_manager() -> None:
 
     Handles loading existing cookies, login if needed, and saving new cookies.
     """
+    if not INSTAGRAM_USERNAME or not INSTAGRAM_PASSWORD:
+        raise ValueError("INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD must be set in environment variables")
+
     logger.info("Starting headless Firefox...")
 
+    @retry()
     def do_work() -> None:
-        driver = with_retries(setup_browser)
+        driver = setup_browser()
         try:
             driver.get(INSTAGRAM_HOME_URL)
             time.sleep(3)
@@ -280,5 +247,5 @@ def cookie_manager() -> None:
             driver.quit()
 
     logger.info("Starting cookie manager with retry mechanism...")
-    with_retries(do_work)
+    do_work()
     logger.info("Cookie manager task completed.")
