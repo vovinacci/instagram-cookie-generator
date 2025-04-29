@@ -1,5 +1,5 @@
 """
-Unit tests for the retry decorator in src.instagram_cookie_updater.retry.
+Unit tests for the retry decorator in src.instagram_cookie_generator.retry.
 """
 
 import time

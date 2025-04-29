@@ -69,6 +69,7 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = false
 strict = true
+mypy_path = "src"
 exclude = [
     "build/",
     "venv/"

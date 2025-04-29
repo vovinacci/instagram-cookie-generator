@@ -36,14 +36,14 @@ def mock_geckodriver_manager(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Fixture for mocking GeckoDriverManager."""
     manager = MagicMock()
     manager.install.return_value = "/path/to/geckodriver"
-    monkeypatch.setattr("instagram_cookie_updater.cookie_manager.GeckoDriverManager", lambda: manager)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.GeckoDriverManager", lambda: manager)
     return manager
 
 
 def test_setup_browser_creates_driver(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test setup_browser creates a WebDriver instance."""
     driver_mock = MagicMock(spec=WebDriver)
-    monkeypatch.setattr("instagram_cookie_updater.cookie_manager.webdriver.Firefox", lambda *a, **kw: driver_mock)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.webdriver.Firefox", lambda *a, **kw: driver_mock)
 
     driver = setup_browser()
     assert driver is not None
@@ -113,7 +113,7 @@ def test_login_instagram_success(monkeypatch: pytest.MonkeyPatch, mock_driver: M
         raise ValueError(f"Unexpected locator: {by}, {value}")
 
     mock_driver.find_element.side_effect = find_element_side_effect
-    monkeypatch.setattr("instagram_cookie_updater.cookie_manager.already_logged_in", lambda driver: True)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.already_logged_in", lambda driver: True)
 
     result = login_instagram(mock_driver)
     assert result is True
@@ -124,7 +124,7 @@ def test_login_instagram_success(monkeypatch: pytest.MonkeyPatch, mock_driver: M
 def test_login_instagram_failure(monkeypatch: pytest.MonkeyPatch, mock_driver: MagicMock) -> None:
     """Test login_instagram fails gracefully when elements are missing."""
     mock_driver.find_element.side_effect = Exception("Element not found")
-    monkeypatch.setattr("instagram_cookie_updater.cookie_manager.already_logged_in", lambda driver: False)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.already_logged_in", lambda driver: False)
 
     result = login_instagram(mock_driver)
     assert result is False
