@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "VERSION=${{ steps.release.outputs.version }}" >> $GITHUB_ENV
 
-      - name: Build and Push Docker Image via Makefile
+      - name: Build and Push Docker Image
         if: ${{ steps.release.outputs.release_created }}
         run: |
           make container-build-push \
