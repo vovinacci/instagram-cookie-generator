@@ -27,6 +27,14 @@ code-fmt-check:  ## Check code formatting
 	isort --check-only .
 	black --check .
 
+.PHONY: container-build-push
+container-build-push:
+	docker build --build-arg VERSION=$(VERSION) -t ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION) -t ghcr.io/$(OWNER)/instagram-cookie-generator:latest .
+	echo "$(GHCR_PAT)" | docker login ghcr.io -u $(OWNER) --password-stdin
+	#docker push ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION)
+	docker push ghcr.io/$(OWNER)/instagram-cookie-generator:latest
+
+
 .PHONY: container-test
 container-test:  ## Run tests in container
 	$(PRINT_TARGET)
