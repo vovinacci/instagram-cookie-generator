@@ -32,9 +32,6 @@ COOKIES_FILE = os.getenv("COOKIES_FILE", "instagram_cookies.txt")
 INSTAGRAM_LOGIN_URL = "https://www.instagram.com/accounts/login/"
 INSTAGRAM_HOME_URL = "https://www.instagram.com/"
 
-if INSTAGRAM_USERNAME is None or INSTAGRAM_PASSWORD is None:
-    raise ValueError("INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD must be set in environment variables")
-
 
 def setup_browser(headless: bool = True, lightweight: bool = True) -> WebDriver:
     """
@@ -219,6 +216,9 @@ def cookie_manager() -> None:
 
     Handles loading existing cookies, login if needed, and saving new cookies.
     """
+    if not INSTAGRAM_USERNAME or not INSTAGRAM_PASSWORD:
+        raise ValueError("INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD must be set in environment variables")
+
     logger.info("Starting headless Firefox...")
 
     @retry()
