@@ -76,7 +76,7 @@ exclude = [
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "--strict-markers --tb=short -q"
+addopts = "--strict-markers --tb=short -q -n auto --randomly-seed=42 --cov=src --cov-report=term-missing"
 testpaths = [
     "tests/unit",
 ]
@@ -94,6 +94,7 @@ source = [
 ]
 
 [tool.coverage.report]
+#fail_under = 80
 show_missing = true
 skip_covered = true
 precision = 1

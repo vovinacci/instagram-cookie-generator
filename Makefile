@@ -47,16 +47,6 @@ lint: clean  ## Run linters
 	mypy --install-types --check-untyped-defs .
 	pylint .
 
-.PHONY: test-coverage
-test-coverage:  ## Run tests
-	$(PRINT_TARGET)
-	pytest --cov=src --cov-report=term-missing tests/unit
-
-.PHONY: test-unit
-test-unit:  ## Run unit tests only
-	$(PRINT_TARGET)
-	pytest tests/unit
-
 .PHONY: test
 test:  ## Run tests
 	$(PRINT_TARGET)

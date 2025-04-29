@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def _stdout_filter(record: logging.LogRecord) -> bool:
@@ -29,7 +29,7 @@ class JsonFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         record_dict = {
-            "timestamp": datetime.utcfromtimestamp(record.created).isoformat(timespec="seconds") + "Z",
+            "timestamp": datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(timespec="seconds") + "Z",
             "level": record.levelname,
             "module": record.module,
             "line": record.lineno,
@@ -47,7 +47,7 @@ class PlainFormatter(logging.Formatter):
     """
 
     def formatTime(self, record: logging.LogRecord, datefmt: str | None = None) -> str:
-        return datetime.utcfromtimestamp(record.created).isoformat(timespec="seconds") + "Z"
+        return datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(timespec="seconds") + "Z"
 
     def format(self, record: logging.LogRecord) -> str:
         record.asctime = self.formatTime(record)
