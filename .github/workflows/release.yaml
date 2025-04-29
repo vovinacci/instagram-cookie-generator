@@ -20,7 +20,7 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           release-type: python
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN_REPO }}
 
       - name: Checkout source code
         if: ${{ steps.release.outputs.release_created }}
@@ -36,7 +36,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GH_TOKEN_REPO }}
 
       - name: Extract version from created tag
         if: ${{ steps.release.outputs.release_created }}
@@ -47,4 +47,4 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: |
           make container-build-push \
-            VERSION=${{ env.VERSION }} OWNER=${{ github.repository_owner }} GHCR_PAT=${{ secrets.GITHUB_TOKEN }}
+            VERSION=${{ env.VERSION }} OWNER=${{ github.repository_owner }} GHCR_PAT=${{ secrets.GH_TOKEN_REPO }}
