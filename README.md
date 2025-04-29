@@ -1,9 +1,12 @@
 # Instagram Cookie Updater
 
-Automatically refresh Instagram cookies using Selenium, save them in Netscape HTTP Cookie File format, and expose a healthcheck endpoint via Flask.
+Automatically refresh Instagram cookies using Selenium, save them in Netscape HTTP Cookie File format, and expose a
+healthcheck endpoint via Flask.
 Designed for Dockerized, production-like deployments with Python.
 
-Works well together with [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux).
+Works well together
+with [yt-dlp](https://github.com/yt-dlp/yt-dlp), [gallery-dl](https://github.com/mikf/gallery-dl/tree/master) or bots
+like [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux).
 
 ## Features
 
@@ -16,7 +19,7 @@ Works well together with [ovchynnikov/load-bot-linux](https://github.com/ovchynn
 
 ## Local Setup
 
-- **Dependency**:  
+- **Dependency**:
   [Python 3.13](https://www.python.org/)
 
 - **Create Python virtualenv** (required during first run):
@@ -108,12 +111,12 @@ curl http://127.0.0.1:5000/status
 
 ## Code Style
 
-| Tool     | Purpose               |
-|:---------|:----------------------|
-| `black`  | Code formatting       |
-| `isort`  | Import sorting        |
-| `mypy`   | Static type checking  |
-| `pylint` | Static linting        |
+| Tool     | Purpose              |
+|:---------|:---------------------|
+| `black`  | Code formatting      |
+| `isort`  | Import sorting       |
+| `mypy`   | Static type checking |
+| `pylint` | Static linting       |
 
 All tools are integrated via Makefile and pre-commit hooks.
 

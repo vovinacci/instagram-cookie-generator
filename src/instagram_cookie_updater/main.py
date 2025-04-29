@@ -16,10 +16,8 @@ from .logger import get_logger, setup_logger
 from .webserver import start_server
 
 load_dotenv()
-
 setup_logger()
 logger = get_logger()
-
 
 REFRESH_INTERVAL = int(os.getenv("REFRESH_INTERVAL_SECONDS", "3600"))
 
@@ -35,7 +33,7 @@ def refresh_worker() -> None:
             logger.info("Cookies refreshed successfully.")
         except Exception as e:  # pylint: disable=broad-exception-caught
             # Intentionally catching all exceptions to prevent the refresh worker from crashing the entire service.
-            logger.error(f"{type(e)}: Error refreshing cookies: {e}")
+            logger.exception(f"{type(e)}: Unhandled exception in refresh worker loop.")
         logger.info(f"Sleeping for {REFRESH_INTERVAL} seconds...")
         time.sleep(REFRESH_INTERVAL)
 

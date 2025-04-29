@@ -23,9 +23,16 @@ def status() -> Tuple[Response, int]:
     Returns:
         JSON: Health status.
     """
-    if os.path.exists(COOKIES_FILE) and os.path.getsize(COOKIES_FILE) > 0:
+    try:
+        file_exists = os.path.exists(COOKIES_FILE) and os.path.getsize(COOKIES_FILE) > 0
+    except OSError as e:
+        logger.error(f"Healthcheck {type(e)}: Error accessing cookies file: e")
+        file_exists = False
+
+    if file_exists:
         logger.debug("Healthcheck: cookies file found.")
         return jsonify({"fresh": True, "message": "Cookies file found."}), 200
+
     logger.warning("Healthcheck: cookies file missing or empty.")
     return jsonify({"fresh": False, "message": "Cookies file missing or empty."}), 503
 
