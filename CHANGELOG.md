@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.1.1...v0.1.2) (2025-04-29)
+
+
+### Bug Fixes
+
+* Adjust comment, use classic PAT ([eea5e16](https://github.com/vovinacci/instagram-cookie-generator/commit/eea5e16ed5e9c33e04fbcf1cd319dc9b593be410))
+
 ## [0.1.1](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.1.0...v0.1.1) (2025-04-29)
 
 
