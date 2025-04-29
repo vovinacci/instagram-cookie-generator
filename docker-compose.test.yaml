@@ -11,4 +11,4 @@ services:
       - LOG_LEVEL=DEBUG
       - LOG_FORMAT=plain
     command: |
-      bash -c "pip install .[dev] && PYTHONPATH=src pytest"
+      bash -c "pip install .[dev] && pip install --upgrade pip && PYTHONPATH=src pytest"
