@@ -46,7 +46,7 @@ endif
 		--load \
 		--platform linux/amd64 \
 		--tag=ghcr.io/$(OWNER)/instagram-cookie-generator:$(VERSION) \
-		--tag ghcr.io/$(OWNER)/instagram-cookie-generator:latest . \
+		--tag ghcr.io/$(OWNER)/instagram-cookie-generator:latest \
 		.
 
 	echo "$(GHCR_PAT)" | docker login ghcr.io -u $(OWNER) --password-stdin

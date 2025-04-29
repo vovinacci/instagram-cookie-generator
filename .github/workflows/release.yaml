@@ -41,7 +41,7 @@ jobs:
       - name: Extract version from created tag
         if: ${{ steps.release.outputs.release_created }}
         run: |
-          echo "VERSION=${{ steps.release.outputs.tag_name }}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.release.outputs.version }}" >> $GITHUB_ENV
 
       - name: Build and Push Docker Image via Makefile
         if: ${{ steps.release.outputs.release_created }}
