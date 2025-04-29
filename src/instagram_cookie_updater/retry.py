@@ -39,6 +39,18 @@ def retry(  # pylint: disable=too-many-positional-arguments
 
     Returns:
         Wrapped function with retry logic.
+
+    Example usage:
+
+    ```python
+    from instagram_cookie_updater.retry import retry
+
+    @retry(max_attempts=5, delay_seconds=2, backoff=True, jitter=1.0)
+    def fragile_task():
+        if random.random() < 0.7:
+            raise RuntimeError("Transient failure")
+        return "Success!"
+    ```
     """
 
     def decorator(func: F) -> F:
