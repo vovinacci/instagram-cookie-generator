@@ -15,8 +15,8 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-import instagram_cookie_updater.cookie_manager as cm
-from instagram_cookie_updater.cookie_manager import (
+import instagram_cookie_generator.cookie_manager as cm
+from instagram_cookie_generator.cookie_manager import (
     already_logged_in,
     load_cookies,
     login_instagram,

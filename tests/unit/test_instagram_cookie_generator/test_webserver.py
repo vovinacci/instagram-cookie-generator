@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from instagram_cookie_updater import cookie_manager, webserver
+from instagram_cookie_generator import cookie_manager, webserver
 
 
 @pytest.fixture()

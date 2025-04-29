@@ -1,5 +1,5 @@
 """
-Logger setup module for instagram_cookie_updater.
+Logger setup module for instagram_cookie_generator.
 
 - INFO and below -> stdout
 - WARNING and above -> stderr

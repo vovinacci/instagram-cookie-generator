@@ -43,7 +43,7 @@ def retry(  # pylint: disable=too-many-positional-arguments
     Example usage:
 
     ```python
-    from instagram_cookie_updater.retry import retry
+    from instagram_cookie_generator.retry import retry
 
     @retry(max_attempts=5, delay_seconds=2, backoff=True, jitter=1.0)
     def fragile_task():

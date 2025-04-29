@@ -37,4 +37,4 @@ COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/*
 
 # Run app
-CMD ["python3", "-m", "instagram_cookie_updater.main"]
+CMD ["python3", "-m", "instagram_cookie_generator.main"]

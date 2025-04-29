@@ -90,11 +90,11 @@ pythonpath = [
 [tool.coverage.run]
 branch = true
 source = [
-    "src/instagram_cookie_updater",
+    "src/instagram_cookie_generator",
 ]
 
 [tool.coverage.report]
-#fail_under = 80
+fail_under = 75
 show_missing = true
 skip_covered = true
 precision = 1

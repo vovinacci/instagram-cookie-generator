@@ -44,7 +44,6 @@ repos:
         args:
           - "--install-types"
           - "--check-untyped-defs"
-          - "--non-interactive"
 
   - repo: https://github.com/PyCQA/pylint
     rev: v3.0.3
