@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   test:
-    if: github.head_ref != 'release-please--branches--master'
+    if: github.head_ref != 'release-please--branches--main'
     runs-on: ubuntu-latest
 
     steps:
