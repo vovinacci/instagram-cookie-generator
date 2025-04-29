@@ -7,7 +7,7 @@ Handles browser automation to log into Instagram, manage cookies, and save them 
 import datetime
 import os
 import time
-from typing import cast
+from typing import Callable, TypeVar, cast
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException, WebDriverException
@@ -33,6 +33,41 @@ INSTAGRAM_HOME_URL = "https://www.instagram.com/"
 
 if INSTAGRAM_USERNAME is None or INSTAGRAM_PASSWORD is None:
     raise ValueError("INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD must be set in environment variables")
+
+_T = TypeVar("_T")
+
+
+def with_retries(func: Callable[[], _T], max_attempts: int = 3, delay_seconds: int = 5) -> _T:
+    """
+    Retry a function up to max_attempts times on failure.
+
+    Args:
+        func: A callable with no arguments that returns a value.
+        max_attempts: Maximum number of attempts.
+        delay_seconds: Delay between attempts in seconds.
+
+    Returns:
+        The successful result from func().
+
+    Raises:
+        Exception: The last raised exception if all attempts fail.
+    """
+    last_exception: Exception | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return func()
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.warning(f"Attempt {attempt}/{max_attempts} failed with error: {e}")
+            last_exception = e
+            if attempt < max_attempts:
+                time.sleep(delay_seconds)
+
+    # After all attempts failed
+    logger.error(f"All {max_attempts} attempts failed.")
+    if last_exception is not None:
+        raise last_exception
+    raise RuntimeError("Unexpected error in with_retries logic.")
 
 
 def setup_browser(headless: bool = True, lightweight: bool = True) -> WebDriver:
@@ -219,27 +254,31 @@ def cookie_manager() -> None:
     Handles loading existing cookies, login if needed, and saving new cookies.
     """
     logger.info("Starting headless Firefox...")
-    try:
-        driver = setup_browser()
-        driver.get(INSTAGRAM_HOME_URL)
-        time.sleep(3)
 
-        if os.path.exists(COOKIES_FILE):
-            load_cookies(driver, COOKIES_FILE)
-            driver.refresh()
-            time.sleep(5)
+    def do_work() -> None:
+        driver = with_retries(setup_browser)
+        try:
+            driver.get(INSTAGRAM_HOME_URL)
+            time.sleep(3)
 
-            if already_logged_in(driver):
-                logger.info("Logged in using existing cookies.")
+            if os.path.exists(COOKIES_FILE):
+                load_cookies(driver, COOKIES_FILE)
+                driver.refresh()
+                time.sleep(5)
+
+                if already_logged_in(driver):
+                    logger.info("Logged in using existing cookies.")
+                    save_cookies(driver, COOKIES_FILE)
+                    return
+
+                logger.info("Existing cookies invalid, logging in manually...")
+
+            if login_instagram(driver):
                 save_cookies(driver, COOKIES_FILE)
-                driver.quit()
-                return
 
-            logger.info("Existing cookies invalid, logging in manually...")
+        finally:
+            driver.quit()
 
-        if login_instagram(driver):
-            save_cookies(driver, COOKIES_FILE)
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        logger.exception(f"{type(e): }Critical failure in cookie_manager.")
-    finally:
-        driver.quit()
+    logger.info("Starting cookie manager with retry mechanism...")
+    with_retries(do_work)
+    logger.info("Cookie manager task completed.")
