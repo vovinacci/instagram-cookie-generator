@@ -16,9 +16,9 @@ FROM python:3.13.3-slim-bullseye
 
 ENV PYTHONUNBUFFERED=1
 
-ARG VERSION
-ARG BUILD_DATETIME
-ARG VCS_REF
+ARG CONTAINER_IMAGE_VERSION=source
+ARG BUILD_DATETIME=now
+ARG VCS_REF=HEAD
 
 # Labels as per https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="vovin@lurk.kyiv.ua" \
