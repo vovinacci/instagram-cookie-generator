@@ -21,6 +21,7 @@ code-checks:  ## Meta target that runs all code checks
 
 .PHONY: code-fmt-check
 code-fmt-check:  ## Check code formatting
+	$(PRINT_TARGET)
 	isort --check-only .
 	black --check .
 
@@ -40,3 +41,18 @@ lint: clean  ## Run linters
 	$(PRINT_TARGET)
 	mypy --install-types --check-untyped-defs .
 	pylint .
+
+.PHONY: test-coverage
+test-coverage:  ## Run tests
+	$(PRINT_TARGET)
+	pytest --cov=src --cov-report=term-missing tests/unit
+
+.PHONY: test-unit
+test-unit:  ## Run unit tests only
+	$(PRINT_TARGET)
+	pytest tests/unit
+
+.PHONY: test
+test:  ## Run tests
+	$(PRINT_TARGET)
+	pytest
