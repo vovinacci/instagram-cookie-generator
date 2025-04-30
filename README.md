@@ -16,6 +16,7 @@ like [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux)
 - Uses headless Firefox browser
 - Full Docker and Docker Compose support
 - Health monitoring via `/status` and `/healthz` endpoints
+- Manual PR-based image build via GitHub Actions for debugging
 
 ## Local Setup
 
@@ -119,9 +120,18 @@ After startup, the Flask server exposes two health endpoints:
 Example usage:
 
 ```shell
-curl http://127.0.0.1:5000/healthz
 curl http://127.0.0.1:5000/status
+curl http://127.0.0.1:5000/healthz
 ```
+
+## GitHub Actions - Manual PR Docker Build
+
+You can manually trigger a Docker image build and push to GHCR from any Pull Request.
+Useful for **debugging changes before merging**.
+
+The workflow can be run from the **Actions** tab by selecting `Manual PR Image Build` and clicking "Run workflow".
+
+Tag format: `ghcr.io/vovinacci/instagram-cookie-generator:pr-<PR_NUMBER>`
 
 ## Code Style
 
