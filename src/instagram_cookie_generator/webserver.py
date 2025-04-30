@@ -118,8 +118,8 @@ def healthz() -> Tuple[Response, int]:
     """
     cookie_info = get_cookie_metadata()
 
-    if not cookie_info.get("valid") or cookie_info.get("expires_in", 0) < 3600:
-        logger.warning("/healthz: cookies invalid or expiring soon.")
+    if not cookie_info.get("valid") or cookie_info.get("expires_in", 0) < 0:
+        logger.warning("/healthz: cookies invalid or expired.")
         return jsonify({"status": "unhealthy"}), 503
 
     logger.debug("/healthz: healthy")
