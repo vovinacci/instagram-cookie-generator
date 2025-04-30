@@ -28,6 +28,7 @@ LABEL org.opencontainers.image.authors="vovin@lurk.kyiv.ua" \
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.source="https://github.com/vovinacci/instagram-cookie-generator" \
       org.opencontainers.image.title="instagram-cookie-generator" \
+      org.opencontainers.image.description="Manage Instagram cookies, save them in Netscape HTTP Cookie File format " \
       org.opencontainers.image.vendor="Volodymyr Shcherbinin (vovin)" \
       org.opencontainers.image.version="${CONTAINER_IMAGE_VERSION}"
 
