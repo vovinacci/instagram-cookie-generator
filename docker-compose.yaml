@@ -2,6 +2,7 @@ services:
   instagram-cookies-updater:
     image: ghcr.io/vovinacci/instagram-cookie-generator:latest
     container_name: instagram-cookies-generator
+    pull_policy: always
     env_file:
       - ./.env
     restart: unless-stopped
@@ -11,11 +12,7 @@ services:
       - ../load-bot-linux/instagram_cookies.txt:/app/instagram_cookies.txt
       - ./.env:/app/.env:ro
     healthcheck:
-      test:
-        - "CMD"
-        - "curl"
-        - "-f"
-        - "http://localhost:5000/healthz"
+      test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
       interval: 2m
       timeout: 10s
       retries: 3

@@ -41,8 +41,34 @@ def test_webserver_status(patch_env_and_reload: Any) -> None:
 
     assert response.status_code == 200
     assert response.json is not None
+
+    # Base health fields
     assert response.json["fresh"] is True
     assert response.json["cookies"]["valid"] is True
+
+    # New fields
+    cookies = response.json["cookies"]
+    assert cookies["cookie_count"] > 0
+    assert isinstance(cookies["cookie_names"], list)
+    assert cookies["expires_in"] > 0
+    assert cookies["earliest_expiry"] is not None
+    assert cookies["last_updated"] is not None
+
+    # Version should always be a string (could be "unknown")
+    assert isinstance(response.json["version"], str)
+
+
+def test_webserver_status_version_fallback(patch_env_and_reload: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that fallback version is used if package version fails."""
+    monkeypatch.setattr(
+        "instagram_cookie_generator.webserver.dist_version", lambda name: (_ for _ in ()).throw(Exception("fail"))
+    )
+
+    client = patch_env_and_reload.app.test_client()
+    response = client.get("/status")
+
+    assert response.status_code == 200
+    assert response.json["version"] == "unknown"
 
 
 def test_webserver_health_healthy(patch_env_and_reload: Any) -> None:
