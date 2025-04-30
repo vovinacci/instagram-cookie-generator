@@ -15,7 +15,7 @@ services:
         - "CMD"
         - "curl"
         - "-f"
-        - "http://localhost:5000/status"
+        - "http://localhost:5000/healthz"
       interval: 2m
       timeout: 10s
       retries: 3
