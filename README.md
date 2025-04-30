@@ -115,7 +115,7 @@ After startup, the Flask server exposes two health endpoints:
 | Endpoint       | Purpose                                                              |
 |----------------|----------------------------------------------------------------------|
 | `GET /status`  | Returns rich cookie metadata: TTL, names, updated timestamp, version |
-| `GET /healthz` | Returns 200 only if cookies are valid and not expiring within 1 hour |
+| `GET /healthz` | Returns 200 only if cookies are valid and not expired                |
 
 Example usage:
 

@@ -5,6 +5,7 @@ Flask server to expose a healthcheck endpoint for Instagram cookies.
 import os
 import time
 from datetime import UTC, datetime
+from importlib.metadata import version as dist_version
 from typing import Any, Dict, Tuple
 
 from flask import Flask, Response, jsonify
@@ -93,6 +94,12 @@ def status() -> Tuple[Response, int]:
     cookie_info = get_cookie_metadata()
     status_code = 200 if cookie_info.get("valid") else 503
 
+    try:
+        pkg_version = dist_version("instagram-cookie-generator")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.warning(f"{type(e)} Cannot get package version: {e}")
+        pkg_version = "unknown"
+
     return (
         jsonify(
             {
@@ -101,7 +108,7 @@ def status() -> Tuple[Response, int]:
                     "Cookies file found and valid." if cookie_info.get("valid") else "Cookies invalid or expired."
                 ),
                 "cookies": cookie_info,
-                "version": os.getenv("CONTAINER_IMAGE_VERSION", "unknown"),
+                "version": pkg_version,
             }
         ),
         status_code,
