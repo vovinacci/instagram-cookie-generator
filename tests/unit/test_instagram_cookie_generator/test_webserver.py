@@ -5,6 +5,7 @@ Unit tests for webserver module.
 # pylint: disable=redefined-outer-name
 
 import importlib
+import time
 from pathlib import Path
 from typing import Any
 
@@ -18,9 +19,11 @@ def patch_env_and_reload(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Any
     """Prepare environment and reload webserver."""
     # Create dummy cookies file
     dummy_file = tmp_path / "cookies.txt"
-    dummy_file.write_text("dummy cookies content")
+    expiry = int(time.time()) + 7200
+    cookie_line = f".instagram.com\tTRUE\t/\tFALSE\t{expiry}\tsessionid\tdummyvalue"
+    dummy_file.write_text(cookie_line)
 
-    # Patch os.getenv to return our dummy cookies path
+    # Patch environment variables
     monkeypatch.setenv("COOKIES_FILE", str(dummy_file))
     monkeypatch.setenv("INSTAGRAM_USERNAME", "dummyuser")
     monkeypatch.setenv("INSTAGRAM_PASSWORD", "dummypass")
@@ -37,13 +40,26 @@ def test_webserver_status(patch_env_and_reload: Any) -> None:
     response = client.get("/status")
 
     assert response.status_code == 200
-    assert response.json == {"fresh": True, "message": "Cookies file found."}
+    assert response.json is not None
+    assert response.json["fresh"] is True
+    assert response.json["cookies"]["valid"] is True
 
 
-def test_webserver_health(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_webserver_health_healthy(patch_env_and_reload: Any) -> None:
+    """Test that /healthz reports healthy when cookies are valid and fresh."""
+    client = patch_env_and_reload.app.test_client()
+    response = client.get("/healthz")
+
+    assert response.status_code == 200
+    assert response.json == {"status": "healthy"}
+
+
+def test_webserver_status_empty_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test /status when cookies file is missing or empty."""
-    # No file created = missing
-    monkeypatch.setenv("COOKIES_FILE", str(tmp_path / "nonexistent_cookies.txt"))
+    empty_file = tmp_path / "cookies.txt"
+    empty_file.touch()
+
+    monkeypatch.setenv("COOKIES_FILE", str(empty_file))
     monkeypatch.setenv("INSTAGRAM_USERNAME", "dummyuser")
     monkeypatch.setenv("INSTAGRAM_PASSWORD", "dummypass")
 
@@ -54,7 +70,29 @@ def test_webserver_health(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> No
     response = client.get("/status")
 
     assert response.status_code == 503
-    assert response.json == {"fresh": False, "message": "Cookies file missing or empty."}
+    assert response.json is not None
+    assert response.json["fresh"] is False
+    assert response.json["cookies"]["valid"] is False
+
+
+def test_webserver_health_unhealthy(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test /healthz reports unhealthy when no valid cookies are present."""
+    empty_file = tmp_path / "cookies.txt"
+    empty_file.touch()
+
+    monkeypatch.setenv("COOKIES_FILE", str(empty_file))
+    monkeypatch.setenv("INSTAGRAM_USERNAME", "dummyuser")
+    monkeypatch.setenv("INSTAGRAM_PASSWORD", "dummypass")
+
+    importlib.reload(cookie_manager)
+    importlib.reload(webserver)
+
+    client = webserver.app.test_client()
+    response = client.get("/healthz")
+
+    assert response.status_code == 503
+    assert response.json is not None
+    assert response.json == {"status": "unhealthy"}
 
 
 def test_webserver_health_file_oserror(monkeypatch: pytest.MonkeyPatch) -> None:

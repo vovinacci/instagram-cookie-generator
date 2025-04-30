@@ -4,7 +4,7 @@ Flask server to expose a healthcheck endpoint for Instagram cookies.
 
 import os
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Dict, Tuple
 
 from flask import Flask, Response, jsonify
@@ -58,14 +58,14 @@ def get_cookie_metadata() -> Dict[str, Any]:
         expires_in = max(0, earliest_expiry - now_ts)
 
         mtime = os.path.getmtime(COOKIES_FILE)
-        last_updated = datetime.utcfromtimestamp(mtime).replace(tzinfo=timezone.utc).isoformat()
+        last_updated = datetime.fromtimestamp(mtime, UTC).isoformat()
 
         return {
             "valid": expires_in > 0,
             "cookie_count": len(cookies),
             "cookie_names": cookie_names,
             "expires_in": expires_in,
-            "earliest_expiry": datetime.utcfromtimestamp(earliest_expiry).replace(tzinfo=timezone.utc).isoformat(),
+            "earliest_expiry": datetime.fromtimestamp(earliest_expiry, UTC).isoformat(),
             "last_updated": last_updated,
         }
 
