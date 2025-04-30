@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.2.0...v0.2.1) (2025-04-30)
+
+
+### Bug Fixes
+
+* Add container image label ([#19](https://github.com/vovinacci/instagram-cookie-generator/issues/19)) ([98c6392](https://github.com/vovinacci/instagram-cookie-generator/commit/98c63925bc111dbec32311c7e9d895739f1b9f34))
+
 ## [0.2.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.1.2...v0.2.0) (2025-04-30)
 
 
