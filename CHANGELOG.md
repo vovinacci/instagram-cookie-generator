@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.1.2...v0.2.0) (2025-04-30)
+
+
+### Features
+
+* Separate status and health checks ([#17](https://github.com/vovinacci/instagram-cookie-generator/issues/17)) ([4aa729d](https://github.com/vovinacci/instagram-cookie-generator/commit/4aa729d3e1b8a3e5c6f0b31fde88fce592e339c5))
+
 ## [0.1.2](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.1.1...v0.1.2) (2025-04-29)
 
 
