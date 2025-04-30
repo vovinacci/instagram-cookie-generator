@@ -1,7 +1,7 @@
 # Instagram Cookie Updater
 
-Automatically refresh Instagram cookies using Selenium, save them in Netscape HTTP Cookie File format, and expose a
-healthcheck endpoint via Flask.
+Automatically refresh Instagram cookies using Selenium, save them in Netscape HTTP Cookie File format, and expose
+healthcheck and readiness endpoints via Flask.
 Designed for Dockerized, production-like deployments with Python.
 
 Works well together
@@ -15,7 +15,8 @@ like [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux)
 - Exports cookies compatible with cURL and other tools
 - Uses headless Firefox browser
 - Full Docker and Docker Compose support
-- Health monitoring via `/status` endpoint
+- Health monitoring via `/status` and `/healthz` endpoints
+- Manual PR-based image build via GitHub Actions for debugging
 
 ## Local Setup
 
@@ -40,7 +41,7 @@ like [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux)
 - **Install dependencies**:
 
   ```shell
-  pip install '.[dev]'
+  pip install -e '.[dev]'
   ```
 
 - **Verify installed tools**:
@@ -66,6 +67,18 @@ like [ovchynnikov/load-bot-linux](https://github.com/ovchynnikov/load-bot-linux)
 
   ```shell
   docker compose up
+  ```
+
+- **Healthcheck integration**:
+
+  Docker Compose is configured with a healthcheck using the `/healthz` endpoint:
+
+  ```yaml
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
+    interval: 2m
+    timeout: 10s
+    retries: 3
   ```
 
 ## Make Targets
@@ -95,19 +108,30 @@ make hooks-install
 
 See configured checks inside [.pre-commit-config.yaml](./.pre-commit-config.yaml).
 
-## Flask Health Endpoint
+## Flask Health Endpoints
 
-After startup, the Flask server exposes a simple healthcheck:
+After startup, the Flask server exposes two health endpoints:
 
-| Endpoint      | Purpose                                                        |
-|:--------------|:---------------------------------------------------------------|
-| `GET /status` | Returns 200 if cookies file exists and is fresh, otherwise 503 |
+| Endpoint       | Purpose                                                              |
+|----------------|----------------------------------------------------------------------|
+| `GET /status`  | Returns rich cookie metadata: TTL, names, updated timestamp, version |
+| `GET /healthz` | Returns 200 only if cookies are valid and not expired                |
 
 Example usage:
 
 ```shell
 curl http://127.0.0.1:5000/status
+curl http://127.0.0.1:5000/healthz
 ```
+
+## GitHub Actions - Manual PR Docker Build
+
+You can manually trigger a Docker image build and push to GHCR from any Pull Request.
+Useful for **debugging changes before merging**.
+
+The workflow can be run from the **Actions** tab by selecting `Manual PR Image Build` and clicking "Run workflow".
+
+Tag format: `ghcr.io/vovinacci/instagram-cookie-generator:pr-<PR_NUMBER>`
 
 ## Code Style
 

@@ -9,7 +9,9 @@ WORKDIR /build
 COPY pyproject.toml src/ ./
 
 # Build wheel
-RUN pip wheel --no-deps --wheel-dir /wheels .
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip wheel --no-deps --wheel-dir /wheels .
 
 ### --- Stage 2: Runtime ---
 FROM python:3.13.3-slim-bullseye
@@ -35,19 +37,20 @@ WORKDIR /app
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      firefox-esr \
       curl \
+      firefox-esr \
+      fonts-liberation \
+      libasound2 \
       libdbus-glib-1-2 \
       libgtk-3-0 \
       libnss3 \
-      libxss1 \
-      libasound2 \
-      fonts-liberation && \
-    rm -rf /var/lib/apt/lists/*
+      libxss1 && \
+    rm -rf /var/lib/apt/lists/* /var/cache/debconf/*-old /var/lib/dpkg/*-old /var/log/* /tmp/* /var/tmp/*
 
 # Install the built wheel
 COPY --from=builder /wheels /wheels
-RUN pip install --no-cache-dir /wheels/*
+RUN pip install --no-cache-dir /wheels/* && \
+    rm -fr /wheels
 
 # Run app
 CMD ["python3", "-m", "instagram_cookie_generator.main"]
