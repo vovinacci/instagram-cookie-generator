@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.2.1...v0.3.0) (2025-05-05)
+
+
+### Features
+
+* **deps:** bump the dependencies group with 4 updates ([#23](https://github.com/vovinacci/instagram-cookie-generator/issues/23)) ([40a3da0](https://github.com/vovinacci/instagram-cookie-generator/commit/40a3da0cf6180a1f985944843c85728bfc8c9eb5))
+
+
+### Bug Fixes
+
+* Fix Docker Compose healthcheck, add unit test coverage ([#21](https://github.com/vovinacci/instagram-cookie-generator/issues/21)) ([e148c79](https://github.com/vovinacci/instagram-cookie-generator/commit/e148c793b8c6cb82eeedb61a18cef40e0445ee80))
+
 ## [0.2.1](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.2.0...v0.2.1) (2025-04-30)
 
 
