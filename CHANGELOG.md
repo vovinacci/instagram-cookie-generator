@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.4.0...v0.5.0) (2025-06-03)
+
+
+### Features
+
+* **deps:** bump the dependencies group with 5 updates ([#28](https://github.com/vovinacci/instagram-cookie-generator/issues/28)) ([f1499d2](https://github.com/vovinacci/instagram-cookie-generator/commit/f1499d2bfa68dbfe1b27389052c7c7495cc8d5c8))
+
 ## [0.4.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.3.0...v0.4.0) (2025-05-26)
 
 
