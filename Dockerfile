@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ### --- Stage 1: Builder ---
-FROM python:3.13.3-slim-bullseye AS builder
+FROM python:3.13.4-slim-bullseye AS builder
 
 WORKDIR /build
 
@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip wheel --no-deps --wheel-dir /wheels .
 
 ### --- Stage 2: Runtime ---
-FROM python:3.13.3-slim-bullseye
+FROM python:3.13.4-slim-bullseye
 
 ENV PYTHONUNBUFFERED=1
 
