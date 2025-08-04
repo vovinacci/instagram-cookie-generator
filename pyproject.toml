@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "instagram-cookie-generator"
-version = "0.5.0"
+version = "0.6.0"
 description = "Automatically refresh Instagram cookies and expose health endpoint."
 authors = [
     { name="Volodymyr Shcherbinin (vovin)", email="vovin@lurk.kyiv.ua" }
