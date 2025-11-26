@@ -7,7 +7,7 @@ Handles browser automation to log into Instagram, manage cookies, and save them 
 import datetime
 import os
 import time
-from typing import cast
+from typing import Optional, Sequence, Tuple, cast
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException, WebDriverException
@@ -16,6 +16,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.firefox import GeckoDriverManager
 
 from .logger import get_logger
@@ -31,6 +32,8 @@ COOKIES_FILE = os.getenv("COOKIES_FILE", "instagram_cookies.txt")
 
 INSTAGRAM_LOGIN_URL = "https://www.instagram.com/accounts/login/"
 INSTAGRAM_HOME_URL = "https://www.instagram.com/"
+
+Locator = Tuple[str, str]
 
 
 @retry(max_attempts=3, delay_seconds=3)
@@ -62,6 +65,52 @@ def setup_browser(headless: bool = True, lightweight: bool = True) -> WebDriver:
     except WebDriverException:
         logger.exception("Failed to initialize Firefox WebDriver.")
         raise
+
+
+def _dismiss_cookie_banner(driver: WebDriver) -> None:
+    """Attempt to close Instagram's GDPR/consent banner if present."""
+    candidate_buttons: Tuple[Locator, ...] = (
+        (By.XPATH, "//button[contains(., 'Allow essential')]"),
+        (By.XPATH, "//button[contains(., 'Allow all')]"),
+        (By.XPATH, "//button[contains(., 'Accept')]"),
+        (By.CSS_SELECTOR, "button[title='Only allow essential cookies']"),
+        (By.CSS_SELECTOR, "button[aria-label='Only allow essential cookies']"),
+    )
+
+    for by, value in candidate_buttons:
+        try:
+            button = driver.find_element(by, value)
+            button.click()
+            time.sleep(1)
+            return
+        except NoSuchElementException:
+            continue
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            logger.debug("Unable to click cookie banner button {}: {}", value, exc)
+
+
+def _find_first_element(driver: WebDriver, locators: Sequence[Locator], wait_seconds: int = 15) -> Optional[WebElement]:
+    """
+    Try multiple locators until one is found or timeout expires.
+
+    Uses repeated find_element calls to avoid brittle single-selector failures
+    when Instagram tweaks its markup.
+    """
+    deadline = time.time() + wait_seconds
+    last_exc: Optional[Exception] = None
+
+    while time.time() < deadline:
+        for by, value in locators:
+            try:
+                return driver.find_element(by, value)
+            except NoSuchElementException as exc:
+                last_exc = exc
+                continue
+        time.sleep(0.5)
+
+    if last_exc:
+        logger.debug("Elements not found for selectors: {}", [value for _, value in locators], exc_info=last_exc)
+    return None
 
 
 def load_cookies(driver: WebDriver, filename: str) -> None:
@@ -187,10 +236,31 @@ def login_instagram(driver: WebDriver) -> bool:
     """
     driver.get(INSTAGRAM_LOGIN_URL)
     time.sleep(5)
+    _dismiss_cookie_banner(driver)
 
     try:
-        username_input = driver.find_element(By.NAME, "username")
-        password_input = driver.find_element(By.NAME, "password")
+        username_input = _find_first_element(
+            driver,
+            [
+                (By.CSS_SELECTOR, "input[name='username']"),
+                (By.NAME, "username"),
+                (By.CSS_SELECTOR, "input[aria-label='Phone number, username, or email']"),
+                (By.XPATH, "//input[contains(@aria-label, 'username') or contains(@name, 'username')]"),
+            ],
+        )
+        password_input = _find_first_element(
+            driver,
+            [
+                (By.CSS_SELECTOR, "input[name='password']"),
+                (By.NAME, "password"),
+                (By.CSS_SELECTOR, "input[aria-label='Password']"),
+                (By.CSS_SELECTOR, "input[type='password']"),
+            ],
+        )
+
+        if not username_input or not password_input:
+            logger.error("Login page structure changed, username/password fields not found after waiting.")
+            return False
 
         username_input.send_keys(INSTAGRAM_USERNAME)
         password_input.send_keys(INSTAGRAM_PASSWORD)
