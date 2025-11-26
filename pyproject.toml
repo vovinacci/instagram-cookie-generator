@@ -35,6 +35,7 @@ dev = [
     "types-Pygments==2.19.0.20251121",
     "types-colorama==0.4.15.20250801",
     "types-pexpect==4.9.0.20250916",
+    "types-pysocks==1.7.1.20251001",
     "types-requests==2.32.4.20250913",
     "types-setuptools==80.9.0.20250822"
 ]
