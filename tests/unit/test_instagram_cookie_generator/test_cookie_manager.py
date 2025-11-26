@@ -12,11 +12,14 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
 import instagram_cookie_generator.cookie_manager as cm
 from instagram_cookie_generator.cookie_manager import (
+    _dismiss_cookie_banner,
+    _find_first_element,
     already_logged_in,
     load_cookies,
     login_instagram,
@@ -40,9 +43,12 @@ def mock_geckodriver_manager(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     return manager
 
 
-def test_setup_browser_creates_driver(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_setup_browser_creates_driver(monkeypatch: pytest.MonkeyPatch, mock_geckodriver_manager: MagicMock) -> None:
     """Test setup_browser creates a WebDriver instance."""
+    del mock_geckodriver_manager
     driver_mock = MagicMock(spec=WebDriver)
+    service_mock = MagicMock()
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.Service", lambda *a, **kw: service_mock)
     monkeypatch.setattr("instagram_cookie_generator.cookie_manager.webdriver.Firefox", lambda *a, **kw: driver_mock)
 
     driver = setup_browser()
@@ -103,17 +109,24 @@ def test_login_instagram_success(monkeypatch: pytest.MonkeyPatch, mock_driver: M
     mock_username = MagicMock()
     mock_password = MagicMock()
 
-    def find_element_side_effect(by: Any, value: Any) -> MagicMock:
-        if by == By.NAME and value == "username":
+    def fake_find_first_element(driver: Any, locators: Any, wait_seconds: int = 15) -> MagicMock:  # noqa: ARG001
+        del wait_seconds, driver
+        selector_values = [value for _, value in locators]
+        if any("username" in value for value in selector_values):
             return mock_username
-        if by == By.NAME and value == "password":
+        if any("password" in value for value in selector_values):
             return mock_password
-        if by == By.XPATH and value == "//button[contains(text(), 'Not Now')]":
-            return MagicMock()
-        raise ValueError(f"Unexpected locator: {by}, {value}")
+        raise ValueError("Unexpected locators")
 
+    def find_element_side_effect(_by: Any, value: Any) -> MagicMock:
+        if _by == By.XPATH and value == "//button[contains(text(), 'Not Now')]":
+            return MagicMock()
+        raise NoSuchElementException("not found")
+
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager._find_first_element", fake_find_first_element)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.already_logged_in", lambda _driver: True)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager._dismiss_cookie_banner", lambda _driver: None)
     mock_driver.find_element.side_effect = find_element_side_effect
-    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.already_logged_in", lambda driver: True)
 
     result = login_instagram(mock_driver)
     assert result is True
@@ -123,11 +136,52 @@ def test_login_instagram_success(monkeypatch: pytest.MonkeyPatch, mock_driver: M
 
 def test_login_instagram_failure(monkeypatch: pytest.MonkeyPatch, mock_driver: MagicMock) -> None:
     """Test login_instagram fails gracefully when elements are missing."""
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager._find_first_element", lambda *a, **kw: None)
     mock_driver.find_element.side_effect = Exception("Element not found")
-    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.already_logged_in", lambda driver: False)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager.already_logged_in", lambda _driver: False)
+    monkeypatch.setattr("instagram_cookie_generator.cookie_manager._dismiss_cookie_banner", lambda _driver: None)
 
     result = login_instagram(mock_driver)
     assert result is False
+
+
+def test_dismiss_cookie_banner_clicks_first_button() -> None:
+    """_dismiss_cookie_banner should click the first found consent button."""
+    button = MagicMock()
+    driver = MagicMock(spec=WebDriver)
+    driver.find_element.side_effect = [button]
+
+    _dismiss_cookie_banner(driver)
+
+    button.click.assert_called_once()
+
+
+def test_dismiss_cookie_banner_handles_missing_elements() -> None:
+    """_dismiss_cookie_banner should tolerate missing banner gracefully."""
+    driver = MagicMock(spec=WebDriver)
+    driver.find_element.side_effect = NoSuchElementException("not found")
+
+    _dismiss_cookie_banner(driver)
+    # No exception means pass
+
+
+def test_find_first_element_returns_first_available() -> None:
+    """_find_first_element should return once a locator succeeds."""
+    driver = MagicMock(spec=WebDriver)
+    found_mock = MagicMock(name="found")
+
+    def side_effect(_by: Any, value: Any) -> MagicMock:
+        if value == "first":
+            raise NoSuchElementException("miss")
+        if value == "second":
+            return found_mock
+        raise AssertionError("Unexpected locator")
+
+    driver.find_element.side_effect = side_effect
+
+    result = _find_first_element(driver, [("by", "first"), ("by", "second")], wait_seconds=1)
+    assert result is not None
+    assert result is found_mock
 
 
 def test_cookie_manager_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -141,9 +195,9 @@ def test_cookie_manager_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
 
     driver = MagicMock(spec=WebDriver)
     monkeypatch.setattr(cm, "setup_browser", lambda: driver)
-    monkeypatch.setattr(cm, "load_cookies", lambda driver, file: None)
-    monkeypatch.setattr(cm, "save_cookies", lambda driver, file: None)
-    monkeypatch.setattr(cm, "already_logged_in", lambda driver: True)
+    monkeypatch.setattr(cm, "load_cookies", lambda _driver, _file: None)
+    monkeypatch.setattr(cm, "save_cookies", lambda _driver, _file: None)
+    monkeypatch.setattr(cm, "already_logged_in", lambda _driver: True)
 
     cm.cookie_manager()
 
