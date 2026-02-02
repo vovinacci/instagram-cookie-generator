@@ -15,29 +15,29 @@ dependencies = [
     "Flask==3.1.2",
     "python-dotenv==1.2.1",
     "requests==2.32.5",
-    "selenium==4.38.0",
+    "selenium==4.40.0",
     "webdriver-manager==4.0.2"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black==25.11.0",
-    "coverage==7.12.0",
+    "black==26.1.0",
+    "coverage==7.13.2",
     "isort[colors]==7.0.0",
-    "mypy==1.18.2",
-    "pylint==4.0.3",
-    "pytest==9.0.1",
+    "mypy==1.19.1",
+    "pylint==4.0.4",
+    "pytest==9.0.2",
     "pytest-cov==7.0.0",
     "pytest-mock==3.15.1",
     "pytest-randomly==4.0.1",
     "pytest-xdist==3.8.0",
-    "setuptools==80.9.0",
+    "setuptools==80.10.2",
     "types-Pygments==2.19.0.20251121",
     "types-colorama==0.4.15.20250801",
-    "types-pexpect==4.9.0.20250916",
+    "types-pexpect==4.9.0.20260127",
     "types-pysocks==1.7.1.20251001",
-    "types-requests==2.32.4.20250913",
-    "types-setuptools==80.9.0.20250822"
+    "types-requests==2.32.4.20260107",
+    "types-setuptools==80.10.0.20260124"
 ]
 
 [tool.black]
