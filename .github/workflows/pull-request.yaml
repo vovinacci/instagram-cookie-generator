@@ -19,7 +19,7 @@ jobs:
 
       - name: Cache pip dependencies
         id: pip-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/pip
@@ -39,7 +39,7 @@ jobs:
 
       - name: Cache pre-commit hooks
         id: pre-commit-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/pre-commit
