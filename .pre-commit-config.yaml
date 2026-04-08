@@ -21,23 +21,23 @@ repos:
 
   # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.46.0
+    rev: v0.48.0
     hooks:
       - id: markdownlint
 
   # Python
   - repo: https://github.com/psf/black
-    rev: 25.11.0
+    rev: 26.3.1
     hooks:
       - id: black
 
   - repo: https://github.com/pycqa/isort
-    rev: 7.0.0
+    rev: 8.0.1
     hooks:
       - id: isort
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
+    rev: v1.20.0
     hooks:
       - id: mypy
         language: system
@@ -46,7 +46,7 @@ repos:
           - "--check-untyped-defs"
 
   - repo: https://github.com/PyCQA/pylint
-    rev: v4.0.3
+    rev: v4.0.5
     hooks:
       - id: pylint
         language: system
@@ -55,7 +55,7 @@ repos:
 
   # YAML
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.37.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
         args:

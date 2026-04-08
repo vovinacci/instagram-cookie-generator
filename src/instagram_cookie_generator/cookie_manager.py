@@ -60,8 +60,7 @@ def setup_browser(headless: bool = True, lightweight: bool = True) -> WebDriver:
 
     try:
         service = Service(GeckoDriverManager().install())
-        driver = webdriver.Firefox(service=service, options=options)
-        return driver
+        return cast(WebDriver, webdriver.Firefox(service=service, options=options))
     except WebDriverException:
         logger.exception("Failed to initialize Firefox WebDriver.")
         raise
