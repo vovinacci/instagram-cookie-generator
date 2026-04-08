@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.6.0...v0.7.0) (2026-04-08)
+
+
+### Features
+
+* **deps:** bump python from 3.13.9-slim-trixie to 3.13.12-slim-trixie ([#64](https://github.com/vovinacci/instagram-cookie-generator/issues/64)) ([21da1fe](https://github.com/vovinacci/instagram-cookie-generator/commit/21da1fe771b7b90bd741a16efc456185e94c1c76))
+
+
+### Bug Fixes
+
+* **deps:** Update all dependencies ([#70](https://github.com/vovinacci/instagram-cookie-generator/issues/70)) ([4e4bb04](https://github.com/vovinacci/instagram-cookie-generator/commit/4e4bb0411d338c012ec1d9c397aeb7cf9b5dc87d))
+
 ## [0.6.0](https://github.com/vovinacci/instagram-cookie-generator/compare/v0.5.0...v0.6.0) (2025-11-26)
 
 
