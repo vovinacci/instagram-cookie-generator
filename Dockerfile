@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ### --- Stage 1: Builder ---
-FROM python:3.13.12-slim-trixie AS builder
+FROM python:3.13.13-slim-trixie AS builder
 
 WORKDIR /build
 
@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip wheel --no-deps --wheel-dir /wheels .
 
 ### --- Stage 2: Runtime ---
-FROM python:3.13.12-slim-trixie
+FROM python:3.13.13-slim-trixie
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
